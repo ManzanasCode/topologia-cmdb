@@ -3,6 +3,7 @@
 import { reactive, ref } from "vue";
 import * as vNG from "v-network-graph";
 import data from "../demoConfigs/data";
+import data2 from "../demoConfigs/data2";
 import icons from "../demoConfigs/icons";
 import {
   ForceLayout,
@@ -13,6 +14,7 @@ import {
 const configs = reactive(
   vNG.defineConfigs({
     view: {
+      autoPanOnResize: true,
       panEnabled: true,
       zoomEnabled: true,
       layoutHandler: new ForceLayout({
@@ -56,11 +58,26 @@ const configs = reactive(
   })
 );
 
-const zoomLevel = ref(1.5);
+const layouts = ref({
+  nodes: {
+    node1: {
+      x: -90,
+      y: -500,
+      fixed: true, // Unaffected by force
+    },
+  },
+});
+
+const nodes = reactive({});
+const edges = reactive({});
+
+const zoomLevel = ref(0.8);
 </script>
 
 <template>
-        
+  <div class="outer-box">
+    <div class="resizable">
+      <div class="handle"></div>
       <v-network-graph
         v-model:zoom-level="zoomLevel"
         :nodes="data.nodes"
@@ -102,15 +119,14 @@ const zoomLevel = ref(1.5);
           <!-- circle for drawing stroke -->
         </template>
       </v-network-graph>
-
-  
-  
+    </div>
+  </div>
 </template>
 <style scoped>
 .outer-box {
-  margin: 12px;
-  width: calc(100% - 12px * 2);
-  height: 400px;
+  margin: 0px;
+  width: 100%;
+  height: 600px;
   position: relative;
   background-color: #aaaaaa;
 }
@@ -118,16 +134,14 @@ const zoomLevel = ref(1.5);
   position: relative;
   resize: both;
   overflow: hidden;
-  min-width: 100px;
-  min-height: 100px;
-  max-width: 100%;
-  max-height: 100%;
-  width: 90%;
-  height: 90%;
+  
+  width: 100%;
+  height: 100%;
   border: 1px solid #444444;
   background-color: #ffffff;
 }
 .handle {
+  display: none;
   position: absolute;
   bottom: 0;
   right: 0;

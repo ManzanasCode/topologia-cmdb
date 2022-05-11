@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vite preview",
     "build": "vite build",
+    "external": "vite --host 192.168.0.205",
     "dev": "vite",
     "preview": "vite preview"
   },
