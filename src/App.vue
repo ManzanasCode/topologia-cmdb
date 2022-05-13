@@ -8,7 +8,14 @@
 
       -->
       <!---->
-      <router-view/>
+      <router-view v-slot="{Component}" >
+      <suspense>
+      <component :is="Component"></component>
+      <template #fallback>
+        <h1>Loading...</h1>
+      </template>
+      </suspense>
+      </router-view>
       
     </v-main>
   </v-app>
@@ -16,15 +23,13 @@
 
 <script lang="ts" setup>
 import HelloWorld from "./components/HelloWorld.vue";
-import Grafica from "./components/Grafica.vue";
 
-import { ref } from "vue";
 
-const selectedSize = ref("M");
+//import { ref } from "vue";
 
-let uri = window.location.search.substring(1);
-let params = new URLSearchParams(uri);
-console.log("params: ", params.get("cmdb"));
+//const selectedSize = ref("M");
+
+
 </script>
 <style>
 .active {

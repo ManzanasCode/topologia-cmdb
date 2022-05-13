@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
         component: DemoView
     },
     {
-        path: '/topologia',
+        path: '/topologia/:cmdb',
         name: "Topologia",
         component: Topologia
     }
