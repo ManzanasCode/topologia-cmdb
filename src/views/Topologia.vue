@@ -1,24 +1,33 @@
 <script lang="ts" setup>
 import { ref, reactive, toRefs } from "vue";
 import { useRoute } from "vue-router";
-import { anilloCMDB } from "../models/infoCMDB";
+import { anilloCMDB,equipo, enlace, ColorEquipo, ImagenEquipo } from "../models/infoCMDB";
 import dataTransform from "../utils/dataTransform";
 import cmdbAPI from "../services/cmdbAPI";
-import Grafica from "../components/Grafica.vue";
+import GraficaGroup from "../components/GraficaGroup.vue";
+
+
 
 const route = useRoute();
 const flagDisplay = ref(false);
 let promisesCMDB = [];
+let arregloEnlaces: any[] = []
+let arregloEquipos: equipo[] = []
 let arregloAnillos: anilloCMDB[] = [];
-let objectGrafica = null;
+let objectGrafica:any = null;
 let validacionAnillos = await dataTransform.parseURL(
   route.params.cmdb.toString()
 );
 if (validacionAnillos.length != 0) {
   arregloAnillos = await cmdbAPI.consultaMultiplesAnillos(validacionAnillos);
-  console.log("arregloAnillos: ", arregloAnillos)
+  console.log("arregloAnillos1: ", arregloAnillos)
+
   objectGrafica = await dataTransform.parseToRenderGraph(arregloAnillos);
-    console.log("objectGrafica: ", objectGrafica)
+  console.log("objectGrafica: ", objectGrafica)
+
+  arregloEnlaces = objectGrafica.arregloEnlaces
+  arregloEquipos = objectGrafica.arregloEquipos
+  
     
 } else {
   flagDisplay.value = !flagDisplay.value;
@@ -26,7 +35,7 @@ if (validacionAnillos.length != 0) {
 </script>
 
 <template  >
-  <v-card>
+  <v-card style="display:none">
     <v-card-title primary-title class="justify-center" v-if="flagDisplay">
       <div>
         <h3 class="headline pink--text text--accent-2">Error URL</h3>
@@ -50,6 +59,12 @@ if (validacionAnillos.length != 0) {
       </div>
     </v-card-title>
     
+    
 
   </v-card>
+  <!-- -->
+  <GraficaGroup :nodes="arregloEquipos" :links="arregloEnlaces"/>
+
+
+
 </template>
