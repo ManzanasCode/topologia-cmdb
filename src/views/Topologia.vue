@@ -7,7 +7,6 @@ import cmdbAPI from "../services/cmdbAPI";
 import GraficaGroup from "../components/GraficaGroup.vue";
 
 
-
 const route = useRoute();
 const flagDisplay = ref(false);
 let promisesCMDB = [];
@@ -15,6 +14,7 @@ let arregloEnlaces: any[] = []
 let arregloEquipos: equipo[] = []
 let arregloAnillos: anilloCMDB[] = [];
 let objectGrafica:any = null;
+
 let validacionAnillos = await dataTransform.parseURL(
   route.params.cmdb.toString()
 );
@@ -22,11 +22,21 @@ if (validacionAnillos.length != 0) {
   arregloAnillos = await cmdbAPI.consultaMultiplesAnillos(validacionAnillos);
   console.log("arregloAnillos1: ", arregloAnillos)
 
+
   objectGrafica = await dataTransform.parseToRenderGraph(arregloAnillos);
-  console.log("objectGrafica: ", objectGrafica)
+  console.log("*** objectGrafica: ", objectGrafica)
 
   arregloEnlaces = objectGrafica.arregloEnlaces
   arregloEquipos = objectGrafica.arregloEquipos
+  
+  console.log("*******")
+  console.table(arregloEnlaces)
+
+
+  //console.log("arregloEnlaces: ", objectGrafica)
+
+  //console.log("arregloEnlaces: ", JSON.stringify(arregloEnlaces))
+  //console.log("arregloEquipos: ", JSON.stringify(arregloEquipos))
   
     
 } else {

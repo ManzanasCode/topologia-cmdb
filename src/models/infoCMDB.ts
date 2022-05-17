@@ -27,6 +27,7 @@ export interface anilloCMDB {
     color?:string;
     source: string;
     target: string 
+    isDoubleLink: boolean
   }
 
 
@@ -40,10 +41,10 @@ export interface anilloCMDB {
   }
 
   export enum ImagenEquipo {
-    Router = "./icons/router_black_blue.png",
+    Router = "./icons/router_green.png",
     Switch = "./icons/switch_blue.png",
-    Olt ="./icons/olt_black.png",
+    Olt ="./icons/olt_orange.png",
     Proovedor = "./icons/proveedor.png",
     POP = "./icons/server-control.png",
-    Default = "./icons/uknow.png",
+    Default = "./icons/popicon.png",
   }

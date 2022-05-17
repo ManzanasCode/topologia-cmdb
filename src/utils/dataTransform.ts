@@ -12,6 +12,10 @@ export default {
             //throw new Error("URL mal estructurada")
         }
     },
+    buscarYmarcarDoblesEnlaces(arregloEnlaces: enlace[]) {
+        
+        return []
+    },
     parseToRenderGraph(arregloAnillos: anilloCMDB[]) {
         let arregloEquipos: any = []
         let arregloEnlaces: any = []
@@ -38,11 +42,23 @@ export default {
             })
 
             anillo.arregloEnlaces.map((enlace: any) => {
-                enlace.color = (enlace.color == undefined) ? '#73777B' : '#EB5353'
+                enlace.color = (enlace.color == undefined) ? '#2064ff' : '#EB5353'
             })
 
-            anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
-            anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
+            anillo.arregloEnlaces.map((enlace, idx, array)=>{
+                let reverseLink = { source : enlace.target, target: enlace.source }
+                let findReverseLink = array.find((e)=> {
+                  return JSON.stringify(reverseLink)===JSON.stringify({ source : e.source, target: e.target })
+                })
+                enlace.isDoubleLink = (findReverseLink != undefined) ? true : false
+                return enlace
+              })
+              
+            //anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
+            //anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
+
+            arregloEquipos = [...anillo.arregloEquipos]
+            arregloEnlaces = [...anillo.arregloEnlaces]
 
         })
 
