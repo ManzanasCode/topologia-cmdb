@@ -12,15 +12,11 @@ export default {
             //throw new Error("URL mal estructurada")
         }
     },
-    buscarYmarcarDoblesEnlaces(arregloEnlaces: enlace[]) {
-        
-        return []
-    },
     parseToRenderGraph(arregloAnillos: anilloCMDB[]) {
         let arregloEquipos: any = []
         let arregloEnlaces: any = []
 
-        arregloAnillos.forEach((anillo: anilloCMDB) => {
+        arregloAnillos.forEach((anillo: anilloCMDB, idxAnillo: number) => {
 
             anillo.arregloEquipos.map((nodo: equipo) => {
                 nodo.name = nodo.id
@@ -44,7 +40,7 @@ export default {
             anillo.arregloEnlaces.map((enlace: any) => {
                 enlace.color = (enlace.color == undefined) ? '#2064ff' : '#EB5353'
             })
-
+            
             anillo.arregloEnlaces.map((enlace, idx, array)=>{
                 let reverseLink = { source : enlace.target, target: enlace.source }
                 let findReverseLink = array.find((e)=> {
@@ -54,11 +50,14 @@ export default {
                 return enlace
               })
               
-            //anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
+              //anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
             //anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
-
-            arregloEquipos = [...anillo.arregloEquipos]
-            arregloEnlaces = [...anillo.arregloEnlaces]
+            
+            anillo.arregloEquipos.forEach((nodo) =>{ 
+                nodo.group = idxAnillo+1
+                arregloEquipos.push(nodo)
+            })
+            anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
 
         })
 

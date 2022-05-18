@@ -1,9 +1,14 @@
 <script lang='ts' setup>
 import { ref, onMounted } from "vue";
 import * as d3 from "d3";
+import {scaleLinear} from "d3-scale";
 
 onMounted(() => {
   //                        ==> MOUNTED
+  
+  let color = d3.scaleOrdinal(d3.schemeCategory10);
+  let curveTypes = ['curveBasisClosed', 'curveCardinalClosed', 'curveCatmullRomClosed', 'curveLinearClosed'];
+
 
   let svg = d3.select("svg");
   let width = +svg.attr("width");
@@ -23,7 +28,6 @@ onMounted(() => {
       link.attr("transform", event.transform);
       nombreServidor.attr("transform", event.transform);
       ipLabel.attr("transform", event.transform);
-      
     }) as any; //as any
 
   svg
@@ -139,6 +143,8 @@ onMounted(() => {
       .id((d: any) => d.id)
       .links(props.links)
   );
+
+  
 
   //simulation.alpha(1).restart().tick();
 

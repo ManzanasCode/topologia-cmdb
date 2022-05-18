@@ -17,6 +17,7 @@ export interface anilloCMDB {
     imagen: string;
     length: string;
     labelDisplay?: string;
+    group?: number;
     name?: string;
   }
 
