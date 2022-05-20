@@ -2,7 +2,17 @@ import { anilloCMDB, equipo, enlace, ColorEquipo, ImagenEquipo } from '../models
 
 export default {
 
-    parseURL(urlParams: string): anilloCMDB[] {
+    parseURL(urlParams: string): string {
+        console.log("urlParams: ", urlParams)
+        try {
+            return JSON.parse(urlParams)
+        } catch (error) {
+            console.log("validaURL ", error)
+            return "";
+            //throw new Error("URL mal estructurada")
+        }
+    },
+    validaURL(urlParams: string): anilloCMDB[] {
         console.log("urlParams: ", urlParams)
         try {
             return JSON.parse(urlParams)
@@ -15,10 +25,12 @@ export default {
     parseToRenderGraph(arregloAnillos: anilloCMDB[]) {
         let arregloEquipos: any = []
         let arregloEnlaces: any = []
+        
 
         arregloAnillos.forEach((anillo: anilloCMDB, idxAnillo: number) => {
 
             anillo.arregloEquipos.map((nodo: equipo) => {
+                nodo.group = idxAnillo+1
                 nodo.name = nodo.id
                 nodo.region = anillo.region
                 nodo.nombreAnillo = anillo.nombre
@@ -53,11 +65,32 @@ export default {
               //anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
             //anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
             
-            anillo.arregloEquipos.forEach((nodo) =>{ 
-                nodo.group = idxAnillo+1
-                arregloEquipos.push(nodo)
+            /*
+            arregloEquipos = anillo.arregloEquipos.filter((equipo)=>{
+                let enlaceEncontrado = 
+                anillo.arregloEnlaces.find((enlace) => {
+                            return (enlace.source == equipo.id || enlace.target == equipo.id)
+                });
+              if (enlaceEncontrado != undefined) return {...equipo}
+              
+                //console.log(enlaceEncontrado);
             })
-            anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
+            */
+
+            anillo.arregloEquipos.forEach((nodo) =>{ 
+                //nodo.group = idxAnillo+1
+                let enlaceEncontrado = 
+                anillo.arregloEnlaces.find((enlace) => {
+                            return (enlace.source == nodo.id || enlace.target == nodo.id)
+                });
+              if (enlaceEncontrado != undefined) arregloEquipos.push(nodo)
+
+                //arregloEquipos.push(nodo)
+            })
+            anillo.arregloEnlaces.forEach(enlace => {
+
+                
+                arregloEnlaces.push(enlace)})
 
         })
 

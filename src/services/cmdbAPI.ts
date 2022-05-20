@@ -1,7 +1,8 @@
-const urlServerCMDB = "http://10.71.35.127:8080"
+const urlServerCMDB = "http://10.180.251.131:8080"
 import { anilloCMDB } from '../models/infoCMDB'
 
 //"http://10.71.35.127:8080/pdrservice/anillos/listAnillos"
+//http://10.180.251.131/
 
 export default {
     async getAnilllosCMDB() {
@@ -24,7 +25,7 @@ export default {
         try {
             let responseAnillos:any = [];
             for await (let anillo of arreglo) {
-                let urlWS = `${urlServerCMDB}/pdrservice/anillos/infoAnilloFull/${anillo.id}`;
+                let urlWS = `${urlServerCMDB}/anillos-component/anillos/detalle/${anillo.id}`;
                 let peticion = await fetch(urlWS);
                 var jsonResponse = await peticion.json();
                 anillo.arregloEnlaces = jsonResponse.arrayConexionesEdges
