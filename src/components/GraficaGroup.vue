@@ -1,28 +1,44 @@
 <script lang='ts' setup>
 import { ref, onMounted } from "vue";
 import * as d3 from "d3";
-import {scaleLinear} from "d3-scale";
+import { scaleLinear } from "d3-scale";
+import { anilloCMDB, equipo, enlace, ColorEquipo, ImagenEquipo } from '../models/infoCMDB'
+
+const props = defineProps<{
+  nodes: any[];
+  links: any[];
+}>();
 
 onMounted(() => {
   //                        ==> MOUNTED
-  const width  = window.innerWidth || document.documentElement.clientWidth || 
-document.body.clientWidth;
-const height = window.innerHeight|| document.documentElement.clientHeight|| 
-document.body.clientHeight;
+  const width =
+    window.innerWidth ||
+    document.documentElement.clientWidth ||
+    document.body.clientWidth;
+  const height =
+    window.innerHeight ||
+    document.documentElement.clientHeight ||
+    document.body.clientHeight;
 
-  window.addEventListener('resize', function () {
-    console.log("me movieron")
-    });
-  
+  window.addEventListener("resize", function () {
+    console.log("me movieron");
+  });
+
   let color = d3.scaleOrdinal(d3.schemeCategory10);
-  let curveTypes = ['curveBasisClosed', 'curveCardinalClosed', 'curveCatmullRomClosed', 'curveLinearClosed'];
-  
-   let svg = d3.select("svg")
-  .attr("width", width)
-  .attr("height", height)
-  
+  let curveTypes = [
+    "curveBasisClosed",
+    "curveCardinalClosed",
+    "curveCatmullRomClosed",
+    "curveLinearClosed",
+  ];
 
- 
+  let  grupoAnillos = props.nodes.map((nodo: equipo) => {
+    return nodo.group
+  })
+
+console.error("grupos: ", grupoAnillos)
+  let svg = d3.select("svg").attr("width", width).attr("height", height);
+
   //let width = +svg.attr("width");
   //let height = +svg.attr("height");
   let g = svg
@@ -66,7 +82,7 @@ document.body.clientHeight;
     .enter()
     .append("path")
     .attr("stroke-width", 4)
-    .attr("fill", 'transparent')
+    .attr("fill", "transparent")
     .attr("stroke", (d: any) => {
       return d.color;
     });
@@ -95,13 +111,15 @@ document.body.clientHeight;
     .data(props.nodes)
     .enter()
     .append("image")
-    .attr("width", (d:any)=> { 
-      return (d.tipo=="POP") ? 45 : 55
-     })
-     .attr("height", (d:any)=> { 
-      return (d.tipo=="POP") ? 45 : 55
-     })
-    .attr("xlink:href",  (d:any)=> { return d.imagen})
+    .attr("width", (d: any) => {
+      return d.tipo == "POP" ? 45 : 55;
+    })
+    .attr("height", (d: any) => {
+      return d.tipo == "POP" ? 45 : 55;
+    })
+    .attr("xlink:href", (d: any) => {
+      return d.imagen;
+    })
     //.attr("fill", (d: any) => {return d.color;})
     //.attr("r", function (d) { return 12; })
     .call(dragBehavior);
@@ -112,22 +130,21 @@ document.body.clientHeight;
     .data(props.nodes)
     .enter()
     .append("text")
-    .style("font-size", '11px')
+    .style("font-size", "11px")
     .text(function (d) {
       return d.nombre;
     });
 
-    let ipLabel = d3
+  let ipLabel = d3
     .select(".ips")
     .selectAll("text")
     .data(props.nodes)
     .enter()
     .append("text")
-    .style("font-size", '11px')
+    .style("font-size", "11px")
     .text(function (d) {
       return d.ip;
     });
-    
 
   svg.call(zoomBehavior);
 
@@ -135,14 +152,17 @@ document.body.clientHeight;
     .forceSimulation()
     .force(
       "link",
-      d3.forceLink().id((d: any) => {
-        return d.id;
-      }).distance(0)
+      d3
+        .forceLink()
+        .id((d: any) => {
+          return d.id;
+        })
+        .distance(0)
     )
-    
+
     .force("x", d3.forceX().strength(0))
     .force("y", d3.forceY().strength(0))
-   .force("charge", d3.forceManyBody().strength(-1030))
+    .force("charge", d3.forceManyBody().strength(-1030))
     .force("center", d3.forceCenter(width / 2, height / 2.5))
     .force("radial", d3.forceRadial(10, width / 2, height / 2))
     .force("collide", d3.forceCollide().radius(35));
@@ -156,33 +176,48 @@ document.body.clientHeight;
       .links(props.links)
   );
 
-  
-
   //simulation.alpha(1).restart().tick();
 
   //simulation.alpha(1).restart();
 
   function ticked() {
-    link
-    .attr("d", function(d) {
-    var dx = d.target.x - d.source.x,
+    link.attr("d", function (d) {
+      var dx = d.target.x - d.source.x,
         dy = d.target.y - d.source.y,
         dr = Math.sqrt(dx * dx + dy * dy);
-    //return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
-    //console.log("M" + d.source.x + "," + d.source.y + "L"  + d.target.x + "," + d.target.y)
-    let line = "M" + d.source.x + "," + d.source.y + "L"  + d.target.x + "," + d.target.y
-    let curve = "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y
-    return (d.isDoubleLink) ? curve : line
-  });
-
-      
+      //return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+      //console.log("M" + d.source.x + "," + d.source.y + "L"  + d.target.x + "," + d.target.y)
+      let line =
+        "M" +
+        d.source.x +
+        "," +
+        d.source.y +
+        "L" +
+        d.target.x +
+        "," +
+        d.target.y;
+      let curve =
+        "M" +
+        d.source.x +
+        "," +
+        d.source.y +
+        "A" +
+        dr +
+        "," +
+        dr +
+        " 0 0,1 " +
+        d.target.x +
+        "," +
+        d.target.y;
+      return d.isDoubleLink ? curve : line;
+    });
 
     node
       .attr("x", (d: any) => {
-        return (d.tipo=="POP") ?  d.x - 18 :  d.x - 22;
+        return d.tipo == "POP" ? d.x - 18 : d.x - 22;
       })
       .attr("y", (d: any) => {
-        return (d.tipo=="POP") ?  d.y -23 :  d.y -35;
+        return d.tipo == "POP" ? d.y - 23 : d.y - 35;
       });
 
     nombreServidor
@@ -193,15 +228,13 @@ document.body.clientHeight;
         return d.y - 25;
       });
 
-      ipLabel
+    ipLabel
       .attr("x", function (d) {
         return d.x - (d.nombre.length / 2) * 3;
       })
       .attr("y", function (d) {
         return d.y - 40;
       });
-
-      
 
     function dragstarted(event: any, d: any) {
       if (!event.active) simulation.alphaTarget(1).restart();
@@ -222,22 +255,16 @@ document.body.clientHeight;
   }
 });
 
-const props = defineProps<{
-  nodes: any[];
-  links: any[];
-}>();
 </script>
 
 <template>
-  
-    <svg  id="graphDiv">
-      <g class="links"></g>
-      <g class="dobleLink"></g>
-      <g class="nodes"></g>
-      <g class="names"></g>
-      <g class="ips"></g>
-    </svg>
-  
+  <svg id="graphDiv">
+    <g class="links"></g>
+    <g class="dobleLink"></g>
+    <g class="nodes"></g>
+    <g class="names"></g>
+    <g class="ips"></g>
+  </svg>
 </template>
 
 

@@ -22,18 +22,41 @@ export default {
             //throw new Error("URL mal estructurada")
         }
     },
+    cleanEquipos(arregloEquipos: equipo[]) {
+        let equipos = []
+        equipos = arregloEquipos.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.id === value.id && t.nombre === value.nombre
+            ))
+        )
+        return equipos
+    },
+    cleanEnlaces(arregloEnlaces: enlace[]) {
+        let enlaces = []
+        enlaces = arregloEnlaces.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.source === value.source && t.target === value.target
+            ))
+        )
+        return enlaces
+    },
+
     parseToRenderGraph(arregloAnillos: anilloCMDB[]) {
         let arregloEquipos: any = []
         let arregloEnlaces: any = []
-        let uniq2 : any = []
-        let uniq3 : any = []
+        let uniq2: any = []
+        let uniq3: any = []
+        let colors: string[] = [""]
 
 
 
         arregloAnillos.forEach((anillo: anilloCMDB, idxAnillo: number) => {
+            console.error("ANILLO: ", anillo.nombre)
+            console.error("idxAnillo: ", idxAnillo)
+            let groupNumber = idxAnillo + 1
 
-            anillo.arregloEquipos.map((nodo: equipo) => {
-                nodo.group = idxAnillo + 1
+            anillo.arregloEquipos.forEach((nodo: equipo) => {
+                nodo.group = groupNumber
                 nodo.name = nodo.id
                 nodo.region = anillo.region
                 nodo.nombreAnillo = anillo.nombre
@@ -52,11 +75,8 @@ export default {
                                     ImagenEquipo.Default
             })
 
-            anillo.arregloEnlaces.map((enlace: any) => {
+            anillo.arregloEnlaces.forEach((enlace, idx, array) => {
                 enlace.color = (enlace.color == undefined) ? '#2064ff' : '#EB5353'
-            })
-
-            anillo.arregloEnlaces.map((enlace, idx, array) => {
                 let reverseLink = { source: enlace.target, target: enlace.source }
                 let findReverseLink = array.find((e) => {
                     return JSON.stringify(reverseLink) === JSON.stringify({ source: e.source, target: e.target })
@@ -65,54 +85,13 @@ export default {
                 return enlace
             })
 
-            //anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
-            //anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
-
-            /*
-            arregloEquipos = anillo.arregloEquipos.filter((equipo)=>{
-                let enlaceEncontrado = 
-                anillo.arregloEnlaces.find((enlace) => {
-                            return (enlace.source == equipo.id || enlace.target == equipo.id)
-                });
-              if (enlaceEncontrado != undefined) return {...equipo}
-              
-                //console.log(enlaceEncontrado);
-            })
-            */
-
-            anillo.arregloEquipos.forEach((nodo) => {
-                //nodo.group = idxAnillo+1
-                let enlaceEncontrado =
-                    anillo.arregloEnlaces.find((enlace) => {
-                        return (enlace.source == nodo.id || enlace.target == nodo.id)
-                    });
-                if (enlaceEncontrado != undefined) arregloEquipos.push(nodo)
-
-                //arregloEquipos.push(nodo)
-            })
-            anillo.arregloEnlaces.forEach(enlace => {
-
-
-                arregloEnlaces.push(enlace)
-            })
-
-            uniq2 = anillo.arregloEquipos.filter((value, index, self) =>
-                index === self.findIndex((t) => (
-                    t.id === value.id && t.name === value.name
-                ))
-            )
-
-            uniq3 = anillo.arregloEnlaces.filter((value, index, self) =>
-                index === self.findIndex((t) => (
-                    t.source === value.source && t.target === value.target
-                ))
-            )
-
-
+            anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
+            anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
+            
         })
 
 
 
-        return { ...arregloAnillos, arregloEquipos: uniq2, arregloEnlaces: uniq3 }
+        return { ...arregloAnillos, arregloEquipos: arregloEquipos, arregloEnlaces: arregloEnlaces }
     }
 }

@@ -14,8 +14,9 @@ import GraficaGroup from "../components/GraficaGroup.vue";
 
 const route = useRoute();
 const flagDisplay = ref(false);
+
 let promisesCMDB = [];
-let arregloEnlaces: any[] = [];
+let arregloEnlaces: enlace[] = [];
 let arregloEquipos: equipo[] = [];
 let arregloAnillos: anilloCMDB[] = [];
 let objectGrafica: any = null;
@@ -32,15 +33,14 @@ let objectGrafica: any = null;
 
       objectGrafica = await dataTransform.parseToRenderGraph(arregloAnillos);
       //console.log(JSON.stringify(objectGrafica.arregloEnlaces));
-      console.log(objectGrafica);
+      //console.log(objectGrafica);
 
-      arregloEnlaces = objectGrafica.arregloEnlaces;
-      arregloEquipos = objectGrafica.arregloEquipos;
+      arregloEnlaces = await dataTransform.cleanEnlaces(objectGrafica.arregloEnlaces);
+      arregloEquipos = await dataTransform.cleanEquipos(objectGrafica.arregloEquipos)
 
       console.log("*******");
-      //console.table(arregloEnlaces);
-
-      //console.log("arregloEnlaces: ", objectGrafica)
+      console.log("arregloEnlaces: ", arregloEnlaces)
+      console.log("arregloEquipos: ", arregloEquipos)
 
       //console.log("arregloEnlaces: ", JSON.stringify(arregloEnlaces))
       //console.log("arregloEquipos: ", JSON.stringify(arregloEquipos))
