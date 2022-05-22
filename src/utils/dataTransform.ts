@@ -25,46 +25,49 @@ export default {
     parseToRenderGraph(arregloAnillos: anilloCMDB[]) {
         let arregloEquipos: any = []
         let arregloEnlaces: any = []
-        
+        let uniq2 : any = []
+        let uniq3 : any = []
+
+
 
         arregloAnillos.forEach((anillo: anilloCMDB, idxAnillo: number) => {
 
             anillo.arregloEquipos.map((nodo: equipo) => {
-                nodo.group = idxAnillo+1
+                nodo.group = idxAnillo + 1
                 nodo.name = nodo.id
                 nodo.region = anillo.region
                 nodo.nombreAnillo = anillo.nombre
-                nodo.color  =
-                    (nodo.tipo.toLocaleLowerCase() == 'router') ? ColorEquipo.Router : 
-                    (nodo.tipo.toLocaleLowerCase() == 'switch') ? ColorEquipo.Switch :
-                    (nodo.tipo.toLocaleLowerCase() == 'olt') ? ColorEquipo.Olt : 
-                    (nodo.tipo.toLocaleLowerCase() == 'proveedor') ? ColorEquipo.Proovedor : 
-                    ColorEquipo.Default;
+                nodo.color =
+                    (nodo.tipo.toLocaleLowerCase() == 'router') ? ColorEquipo.Router :
+                        (nodo.tipo.toLocaleLowerCase() == 'switch') ? ColorEquipo.Switch :
+                            (nodo.tipo.toLocaleLowerCase() == 'olt') ? ColorEquipo.Olt :
+                                (nodo.tipo.toLocaleLowerCase() == 'proveedor') ? ColorEquipo.Proovedor :
+                                    ColorEquipo.Default;
 
-                nodo.imagen  =
-                    (nodo.tipo.toLocaleLowerCase() == 'router') ? ImagenEquipo.Router : 
-                    (nodo.tipo.toLocaleLowerCase() == 'switch') ? ImagenEquipo.Switch :
-                    (nodo.tipo.toLocaleLowerCase() == 'olt') ? ImagenEquipo.Olt : 
-                    (nodo.tipo.toLocaleLowerCase() == 'proveedor') ? ImagenEquipo.Proovedor : 
-                    ImagenEquipo.Default
+                nodo.imagen =
+                    (nodo.tipo.toLocaleLowerCase() == 'router') ? ImagenEquipo.Router :
+                        (nodo.tipo.toLocaleLowerCase() == 'switch') ? ImagenEquipo.Switch :
+                            (nodo.tipo.toLocaleLowerCase() == 'olt') ? ImagenEquipo.Olt :
+                                (nodo.tipo.toLocaleLowerCase() == 'proveedor') ? ImagenEquipo.Proovedor :
+                                    ImagenEquipo.Default
             })
 
             anillo.arregloEnlaces.map((enlace: any) => {
                 enlace.color = (enlace.color == undefined) ? '#2064ff' : '#EB5353'
             })
-            
-            anillo.arregloEnlaces.map((enlace, idx, array)=>{
-                let reverseLink = { source : enlace.target, target: enlace.source }
-                let findReverseLink = array.find((e)=> {
-                  return JSON.stringify(reverseLink)===JSON.stringify({ source : e.source, target: e.target })
+
+            anillo.arregloEnlaces.map((enlace, idx, array) => {
+                let reverseLink = { source: enlace.target, target: enlace.source }
+                let findReverseLink = array.find((e) => {
+                    return JSON.stringify(reverseLink) === JSON.stringify({ source: e.source, target: e.target })
                 })
                 enlace.isDoubleLink = (findReverseLink != undefined) ? true : false
                 return enlace
-              })
-              
-              //anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
+            })
+
+            //anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
             //anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
-            
+
             /*
             arregloEquipos = anillo.arregloEquipos.filter((equipo)=>{
                 let enlaceEncontrado = 
@@ -77,25 +80,39 @@ export default {
             })
             */
 
-            anillo.arregloEquipos.forEach((nodo) =>{ 
+            anillo.arregloEquipos.forEach((nodo) => {
                 //nodo.group = idxAnillo+1
-                let enlaceEncontrado = 
-                anillo.arregloEnlaces.find((enlace) => {
-                            return (enlace.source == nodo.id || enlace.target == nodo.id)
-                });
-              if (enlaceEncontrado != undefined) arregloEquipos.push(nodo)
+                let enlaceEncontrado =
+                    anillo.arregloEnlaces.find((enlace) => {
+                        return (enlace.source == nodo.id || enlace.target == nodo.id)
+                    });
+                if (enlaceEncontrado != undefined) arregloEquipos.push(nodo)
 
                 //arregloEquipos.push(nodo)
             })
             anillo.arregloEnlaces.forEach(enlace => {
 
-                
-                arregloEnlaces.push(enlace)})
+
+                arregloEnlaces.push(enlace)
+            })
+
+            uniq2 = anillo.arregloEquipos.filter((value, index, self) =>
+                index === self.findIndex((t) => (
+                    t.id === value.id && t.name === value.name
+                ))
+            )
+
+            uniq3 = anillo.arregloEnlaces.filter((value, index, self) =>
+                index === self.findIndex((t) => (
+                    t.source === value.source && t.target === value.target
+                ))
+            )
+
 
         })
 
 
 
-        return { ...arregloAnillos, arregloEquipos: arregloEquipos, arregloEnlaces: arregloEnlaces }
+        return { ...arregloAnillos, arregloEquipos: uniq2, arregloEnlaces: uniq3 }
     }
 }

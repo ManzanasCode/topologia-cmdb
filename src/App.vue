@@ -1,6 +1,5 @@
 <template>
-  <v-app>
-    <v-main>
+  
       <!-- 
       <Grafica />
       
@@ -17,8 +16,7 @@
       </suspense>
       </router-view>
       
-    </v-main>
-  </v-app>
+    
 </template>
 
 <script lang="ts" setup>

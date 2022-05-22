@@ -31,13 +31,14 @@ let objectGrafica: any = null;
       console.log("arregloAnillos1: ", arregloAnillos);
 
       objectGrafica = await dataTransform.parseToRenderGraph(arregloAnillos);
-      console.log("*** objectGrafica: ", objectGrafica);
+      //console.log(JSON.stringify(objectGrafica.arregloEnlaces));
+      console.log(objectGrafica);
 
       arregloEnlaces = objectGrafica.arregloEnlaces;
       arregloEquipos = objectGrafica.arregloEquipos;
 
       console.log("*******");
-      console.table(arregloEnlaces);
+      //console.table(arregloEnlaces);
 
       //console.log("arregloEnlaces: ", objectGrafica)
 

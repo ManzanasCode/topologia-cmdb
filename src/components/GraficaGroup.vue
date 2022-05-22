@@ -5,14 +5,26 @@ import {scaleLinear} from "d3-scale";
 
 onMounted(() => {
   //                        ==> MOUNTED
+  const width  = window.innerWidth || document.documentElement.clientWidth || 
+document.body.clientWidth;
+const height = window.innerHeight|| document.documentElement.clientHeight|| 
+document.body.clientHeight;
+
+  window.addEventListener('resize', function () {
+    console.log("me movieron")
+    });
   
   let color = d3.scaleOrdinal(d3.schemeCategory10);
   let curveTypes = ['curveBasisClosed', 'curveCardinalClosed', 'curveCatmullRomClosed', 'curveLinearClosed'];
+  
+   let svg = d3.select("svg")
+  .attr("width", width)
+  .attr("height", height)
+  
 
-
-  let svg = d3.select("svg");
-  let width = +svg.attr("width");
-  let height = +svg.attr("height");
+ 
+  //let width = +svg.attr("width");
+  //let height = +svg.attr("height");
   let g = svg
     .append("g")
     .attr("width", width)
@@ -167,10 +179,10 @@ onMounted(() => {
 
     node
       .attr("x", (d: any) => {
-        return d.x - 22;
+        return (d.tipo=="POP") ?  d.x - 18 :  d.x - 22;
       })
       .attr("y", (d: any) => {
-        return d.y -35;
+        return (d.tipo=="POP") ?  d.y -23 :  d.y -35;
       });
 
     nombreServidor
@@ -217,15 +229,15 @@ const props = defineProps<{
 </script>
 
 <template>
-  <v-container>
-    <svg width="1100" height="1100" id="graphDiv">
+  
+    <svg  id="graphDiv">
       <g class="links"></g>
       <g class="dobleLink"></g>
       <g class="nodes"></g>
       <g class="names"></g>
       <g class="ips"></g>
     </svg>
-  </v-container>
+  
 </template>
 
 
