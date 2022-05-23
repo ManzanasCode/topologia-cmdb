@@ -44,11 +44,7 @@ export default {
     parseToRenderGraph(arregloAnillos: anilloCMDB[]) {
         let arregloEquipos: any = []
         let arregloEnlaces: any = []
-        let uniq2: any = []
-        let uniq3: any = []
-        let colors: string[] = [""]
-
-
+        
 
         arregloAnillos.forEach((anillo: anilloCMDB, idxAnillo: number) => {
             console.error("ANILLO: ", anillo.nombre)

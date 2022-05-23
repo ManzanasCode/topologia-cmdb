@@ -11,6 +11,7 @@ import {
 import dataTransform from "../utils/dataTransform";
 import cmdbAPI from "../services/cmdbAPI";
 import GraficaGroup from "../components/GraficaGroup.vue";
+import data3 from "../demoConfigs/data3";
 
 const route = useRoute();
 const flagDisplay = ref(false);
@@ -37,10 +38,18 @@ let objectGrafica: any = null;
 
       arregloEnlaces = await dataTransform.cleanEnlaces(objectGrafica.arregloEnlaces);
       arregloEquipos = await dataTransform.cleanEquipos(objectGrafica.arregloEquipos)
+      
+      //arregloEnlaces = await data3.edges;
+      //arregloEquipos = await data3.nodes
+      
 
-      console.log("*******");
-      console.log("arregloEnlaces: ", arregloEnlaces)
-      console.log("arregloEquipos: ", arregloEquipos)
+      //arregloEquipos = objectGrafica.arregloEquipos
+      //arregloEnlaces = objectGrafica.arregloEnlaces
+
+      //console.log("*******");
+      //console.log("arregloEnlaces: ", arregloEnlaces)
+      //console.log("arregloEquipos: ", arregloEquipos)
+      console.table(arregloEquipos)
 
       //console.log("arregloEnlaces: ", JSON.stringify(arregloEnlaces))
       //console.log("arregloEquipos: ", JSON.stringify(arregloEquipos))

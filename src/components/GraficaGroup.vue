@@ -2,7 +2,13 @@
 import { ref, onMounted } from "vue";
 import * as d3 from "d3";
 import { scaleLinear } from "d3-scale";
-import { anilloCMDB, equipo, enlace, ColorEquipo, ImagenEquipo } from '../models/infoCMDB'
+import {
+  anilloCMDB,
+  equipo,
+  enlace,
+  ColorEquipo,
+  ImagenEquipo,
+} from "../models/infoCMDB";
 
 const props = defineProps<{
   nodes: any[];
@@ -32,13 +38,24 @@ onMounted(() => {
     "curveLinearClosed",
   ];
 
-  let  grupoAnillos = props.nodes.map((nodo: equipo) => {
-    return nodo.group
-  }).filter((grupo,index, self)=>{
-    return self.indexOf(grupo) == index
-  })
+  let polygon: any;
+  let centroid: any;
+  let scaleFactor = 1.2
 
-console.error("grupos: ", grupoAnillos)
+  let valueline = d3.line()
+      .x(function(d) { return d[0]; })
+      .y(function(d) { return d[1]; })
+      .curve(d3.curveCatmullRomClosed);
+
+  let grupoAnillos = props.nodes
+    .map((nodo: equipo) => {
+      return nodo.group;
+    })
+    .filter((grupo, index, self) => {
+      return self.indexOf(grupo) == index;
+    });
+
+  console.error("grupos: ", grupoAnillos);
   let svg = d3.select("svg").attr("width", width).attr("height", height);
 
   //let width = +svg.attr("width");
@@ -50,14 +67,34 @@ console.error("grupos: ", grupoAnillos)
     .style("fill", "none")
     .style("pointer-events", "all");
 
+  let hulls = svg
+    .append("g")
+    .selectAll("path")
+    .data(grupoAnillos)
+    .enter()
+    .append("path")
+    .style("stroke", (d: any) => {
+      return color(d);
+    })
+    .style("fill", "none")
+    .style("stroke-width", 15)
+    .style("stroke-opacity", 0.3)
+    .style("fill-opacity", 0.3)
+    .attr("stroke-linejoin", "round");
+
   const zoomBehavior = d3
     .zoom()
     .scaleExtent([1 / 3, 4])
     .on("zoom", (event, d) => {
+      
       node.attr("transform", event.transform);
       link.attr("transform", event.transform);
       nombreServidor.attr("transform", event.transform);
       ipLabel.attr("transform", event.transform);
+      paths.attr("transform", event.transform);
+      
+      
+      
     }) as any; //as any
 
   svg
@@ -89,6 +126,27 @@ console.error("grupos: ", grupoAnillos)
       return d.color;
     });
 
+  let paths = svg
+    .append("g")
+    .attr("class", "links")
+    .selectAll(".path_placeholder")
+    .data(grupoAnillos, function (d: any) {
+      return +d;
+    })
+    .enter()
+    .append("g")
+    .attr("class", "path_placeholder")
+    .append("path")
+    .attr("stroke", function (d: any) {
+      return color(d);
+    })
+    .attr("fill", function (d: any) {
+      return color(d);
+    })
+    .attr("opacity", 0.2);
+
+  //paths.transition().duration(2000).attr("opacity", 0.2);
+
   const dragBehavior = d3
     .drag()
     .on("start", (event: any, d: any) => {
@@ -105,6 +163,44 @@ console.error("grupos: ", grupoAnillos)
       d.fx = null;
       d.fy = null;
     }) as any; //as any
+
+  var polygonGenerator = function (groupId: any) {
+    var node_coords = node
+      .filter(function (d) {
+        return d.group == groupId;
+      })
+      .data()
+      .map(function (d) {
+        return [d.x, d.y];
+      }) as any;
+
+    return d3.polygonHull(node_coords);
+  };
+  
+
+  function updateGroups() {
+  grupoAnillos.forEach(function(groupId) {
+    var path:any = paths.filter(function(d) { return d == groupId;})
+      .attr('transform', 'scale(1) translate(0,0)')
+      .attr('d', function(d) {
+        polygon = polygonGenerator(d);          
+        centroid = d3.polygonCentroid(polygon);
+
+        // to scale the shape properly around its points:
+        // move the 'g' element to the centroid point, translate
+        // all the path around the center of the 'g' and then
+        // we can scale the 'g' element properly
+        return valueline(
+          polygon.map(function(point:any) {
+            return [  point[0] - centroid[0], point[1] - centroid[1] ];
+          })
+        );
+      });
+
+    d3.select(path.node().parentNode).attr('transform', 'translate('  + centroid[0] + ',' + (centroid[1]) + ') scale(' + scaleFactor + ')');
+  });
+}
+
 
   let node = svg
     .append("g")
@@ -238,6 +334,8 @@ console.error("grupos: ", grupoAnillos)
         return d.y - 40;
       });
 
+      //updateGroups()
+
     function dragstarted(event: any, d: any) {
       if (!event.active) simulation.alphaTarget(1).restart();
       d.fx = d.x;
@@ -256,7 +354,6 @@ console.error("grupos: ", grupoAnillos)
     }
   }
 });
-
 </script>
 
 <template>
