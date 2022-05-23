@@ -34,6 +34,8 @@ onMounted(() => {
 
   let  grupoAnillos = props.nodes.map((nodo: equipo) => {
     return nodo.group
+  }).filter((grupo,index, self)=>{
+    return self.indexOf(grupo) == index
   })
 
 console.error("grupos: ", grupoAnillos)
