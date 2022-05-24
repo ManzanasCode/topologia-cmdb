@@ -37,12 +37,11 @@ let objectGrafica: any = null;
       //console.log(objectGrafica);
 
       arregloEnlaces = await dataTransform.cleanEnlaces(objectGrafica.arregloEnlaces);
-      arregloEquipos = await dataTransform.cleanEquipos(objectGrafica.arregloEquipos)
+      arregloEquipos = await dataTransform.cleanEquipos(objectGrafica.arregloEquipos);
       
       //arregloEnlaces = await data3.edges;
       //arregloEquipos = await data3.nodes
       
-
       //arregloEquipos = objectGrafica.arregloEquipos
       //arregloEnlaces = objectGrafica.arregloEnlaces
 
