@@ -31,7 +31,7 @@ export default {
                 anillo.arregloEnlaces = jsonResponse.arrayConexionesEdges
                 anillo.arregloEquipos = jsonResponse.arrayDispositivosNodes
                 responseAnillos.push(anillo)
-                console.log("responseAnillos: ", responseAnillos)
+                //console.log("responseAnillos: ", responseAnillos)
             }
             return responseAnillos
         } catch (error) {

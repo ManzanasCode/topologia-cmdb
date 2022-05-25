@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, toRefs, defineEmits} from "vue";
 import * as d3 from "d3";
 import { scaleLinear } from "d3-scale";
 import {
@@ -13,7 +13,22 @@ import {
 const props = defineProps<{
   nodes: any[];
   links: any[];
+  busquedaGrupo: string;
 }>();
+
+
+// type-based
+const emit = defineEmits<{
+  (e: 'change', id: number): void
+  (e: 'update', value: string): void
+}>()
+
+
+const selected = ref(props.nodes)
+
+const question = ref('')
+const answer = ref('Questions usually contain a question mark. ;-)')
+
 
 onMounted(() => {
   //                        ==> MOUNTED
@@ -41,9 +56,7 @@ onMounted(() => {
   let polygon: any;
   let centroid: any;
   let scaleFactor = 1.3;
-
   
-
   let valueline = d3
     .line()
     .x(function (d) {
@@ -92,7 +105,7 @@ onMounted(() => {
     })
     .filter((grupo, index, self) => {
       return self.indexOf(grupo) == index;
-    });
+    }).filter(group => group == 1 )
 
   /*
   svg
@@ -303,9 +316,18 @@ onMounted(() => {
     d.fy = null;
   }
 });
+
+watch(question, async (newQuestion) => {
+  
+})
+
+
+
 </script>
 
 <template>
+
+  
   <svg id="graphDiv">
     <g class="links"></g>
     <g class="dobleLink"></g>

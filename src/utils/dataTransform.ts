@@ -47,8 +47,8 @@ export default {
         
 
         arregloAnillos.forEach((anillo: anilloCMDB, idxAnillo: number) => {
-            console.error("ANILLO: ", anillo.nombre)
-            console.error("idxAnillo: ", idxAnillo)
+            //console.error("ANILLO: ", anillo.nombre)
+            //console.error("idxAnillo: ", idxAnillo)
             let groupNumber = idxAnillo + 1
 
             anillo.arregloEquipos.forEach((nodo: equipo) => {
@@ -88,6 +88,7 @@ export default {
 
 
 
-        return { ...arregloAnillos, arregloEquipos: arregloEquipos, arregloEnlaces: arregloEnlaces }
-    }
+        return { arregloGlobal:arregloAnillos, arregloEquipos: arregloEquipos, arregloEnlaces: arregloEnlaces }
+    },
+
 }
