@@ -17,18 +17,6 @@ const props = defineProps<{
 }>();
 
 
-// type-based
-const emit = defineEmits<{
-  (e: 'change', id: number): void
-  (e: 'update', value: string): void
-}>()
-
-
-const selected = ref(props.nodes)
-
-const question = ref('')
-const answer = ref('Questions usually contain a question mark. ;-)')
-
 
 onMounted(() => {
   //                        ==> MOUNTED
@@ -105,7 +93,7 @@ onMounted(() => {
     })
     .filter((grupo, index, self) => {
       return self.indexOf(grupo) == index;
-    }).filter(group => group == 1 )
+    }).filter(group => group != 0 )
 
   /*
   svg
@@ -317,17 +305,11 @@ onMounted(() => {
   }
 });
 
-watch(question, async (newQuestion) => {
-  
-})
-
-
 
 </script>
 
 <template>
 
-  
   <svg id="graphDiv">
     <g class="links"></g>
     <g class="dobleLink"></g>
@@ -335,6 +317,7 @@ watch(question, async (newQuestion) => {
     <g class="names"></g>
     <g class="ips"></g>
   </svg>
+
 </template>
 
 

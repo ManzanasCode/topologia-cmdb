@@ -84,15 +84,16 @@ try {
 
 
 const changeSelect = async (event: any) => {
-  console.error("changeSelect")
+  console.error("changeSelect3")
 
   let tempArray=[{"id":"0x71515e1e66f82b40bc3b4740ebb86a80","nombre":"PALMAS_A","region":"R1"},{"id":"0x9452054dd4f3224e8f1277162dbaaee1","nombre":"PALMAS_B","region":"R1"}]
   let url = `http://192.168.0.205:3000/#/topologia/${JSON.stringify(tempArray)}`
   let url2 = `http://192.168.0.205:3000/#/demo`
 
-//router.push({ name: 'Topologia', params: { cmdb:  JSON.stringify(tempArray)}, replace: true })
+router.push({ name: 'Topologia', params: { cmdb:  JSON.stringify(tempArray)} })
 
-  window.location.href = url
+//router.push(`topologia/${JSON.stringify(tempArray)}`); 
+  //window.location.href = url
 }
 
 const changeSelect2 = async (event: any) => {
