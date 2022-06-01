@@ -1,5 +1,6 @@
-const urlServerCMDB = "http://10.180.251.131:8080"
 import { anilloCMDB } from '../models/infoCMDB'
+const urlServerCMDB = "http://10.180.251.131:8080"
+
 
 //"http://10.71.35.127:8080/pdrservice/anillos/listAnillos"
 //http://10.180.251.131/

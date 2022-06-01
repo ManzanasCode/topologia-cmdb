@@ -22,7 +22,23 @@ export default {
             //throw new Error("URL mal estructurada")
         }
     },
-    cleanEquipos(arregloEquipos: equipo[]) {
+    cleanEquiposAndMarkCoincidences(arregloEquipos: equipo[]) {
+
+        console.log("TOTAL EQUIPOS: ", arregloEquipos.length)
+        
+        arregloEquipos.forEach((nodo: equipo, idxNodo, self) => {
+
+            if (nodo.containsLinkRed && nodo.tipo == "Router") {
+                
+                let totalCoincidences = self.filter((n, i)=>{
+                    if(nodo.id== n.id && nodo.ip== n.ip) return n
+                })
+                
+                nodo.numCoincidences = totalCoincidences.length
+                
+            }
+        })
+
         let equipos = []
         equipos = arregloEquipos.filter((value, index, self) =>
             index === self.findIndex((t) => (
@@ -44,11 +60,10 @@ export default {
     parseToRenderGraph(arregloAnillos: anilloCMDB[]) {
         let arregloEquipos: any = []
         let arregloEnlaces: any = []
-        
+
 
         arregloAnillos.forEach((anillo: anilloCMDB, idxAnillo: number) => {
-            //console.error("ANILLO: ", anillo.nombre)
-            //console.error("idxAnillo: ", idxAnillo)
+            
             let groupNumber = idxAnillo + 1
 
             anillo.arregloEquipos.forEach((nodo: equipo) => {
@@ -63,12 +78,12 @@ export default {
                                 (nodo.tipo.toLocaleLowerCase() == 'proveedor') ? ColorEquipo.Proovedor :
                                     ColorEquipo.Default;
 
-                nodo.imagen =
-                    (nodo.tipo.toLocaleLowerCase() == 'router') ? ImagenEquipo.Router :
-                        (nodo.tipo.toLocaleLowerCase() == 'switch') ? ImagenEquipo.Switch :
-                            (nodo.tipo.toLocaleLowerCase() == 'olt') ? ImagenEquipo.Olt :
-                                (nodo.tipo.toLocaleLowerCase() == 'proveedor') ? ImagenEquipo.Proovedor :
-                                    ImagenEquipo.Default
+                nodo.imagen = (nodo.tipo.toLocaleLowerCase() == 'router') ? ImagenEquipo.Router :
+                    (nodo.tipo.toLocaleLowerCase() == 'switch') ? ImagenEquipo.Switch :
+                        (nodo.tipo.toLocaleLowerCase() == 'olt') ? ImagenEquipo.Olt :
+                            (nodo.tipo.toLocaleLowerCase() == 'proveedor') ? ImagenEquipo.Proovedor : ImagenEquipo.Default
+
+
             })
 
             anillo.arregloEnlaces.forEach((enlace, idx, array) => {
@@ -81,14 +96,20 @@ export default {
                 return enlace
             })
 
+            anillo.arregloEquipos.forEach((nodo: equipo) => {
+                let nodoRojo = anillo.arregloEnlaces.find((enlace, idxEnlace) => {
+                    if ((enlace.source == nodo.id || enlace.target == nodo.id) && enlace.color == '#EB5353') return enlace
+                })
+                nodo.containsLinkRed = (nodoRojo != undefined) ? true : false
+            })
+            
             anillo.arregloEquipos.forEach(nodo => arregloEquipos.push(nodo))
             anillo.arregloEnlaces.forEach(enlace => arregloEnlaces.push(enlace))
-            
         })
 
 
 
-        return { arregloGlobal:arregloAnillos, arregloEquipos: arregloEquipos, arregloEnlaces: arregloEnlaces }
+        return { arregloGlobal: arregloAnillos, arregloEquipos: arregloEquipos, arregloEnlaces: arregloEnlaces }
     },
 
 }

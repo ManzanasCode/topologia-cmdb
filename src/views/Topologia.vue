@@ -52,12 +52,14 @@ try {
 
     objectGrafica = await dataTransform.parseToRenderGraph(arregloAnillos);
     //console.log(JSON.stringify(objectGrafica.arregloEnlaces));
+    console.table(objectGrafica.arregloEquipos);
     console.log("ARREGLO GLOBAL: ", objectGrafica.arregloGlobal);
 
     arregloEnlaces = await dataTransform.cleanEnlaces(
       objectGrafica.arregloEnlaces
     );
-    arregloEquipos = await dataTransform.cleanEquipos(
+
+    arregloEquipos = await dataTransform.cleanEquiposAndMarkCoincidences(
       objectGrafica.arregloEquipos
     );
 
@@ -84,60 +86,11 @@ try {
 
 
 const changeSelect = async (event: any) => {
-  console.error("changeSelect3")
-
-  let tempArray=[{"id":"0x71515e1e66f82b40bc3b4740ebb86a80","nombre":"PALMAS_A","region":"R1"},{"id":"0x9452054dd4f3224e8f1277162dbaaee1","nombre":"PALMAS_B","region":"R1"}]
-  let url = `http://192.168.0.205:3000/#/topologia/${JSON.stringify(tempArray)}`
-  let url2 = `http://192.168.0.205:3000/#/demo`
-
-router.push({ name: 'Topologia', params: { cmdb:  JSON.stringify(tempArray)} })
-
-//router.push(`topologia/${JSON.stringify(tempArray)}`); 
-  //window.location.href = url
+  
 }
 
-const changeSelect2 = async (event: any) => {
-  console.log("ANILLO: ", event.target.value);
-  console.error("before Resort: ", arregloAnillos);
-  renderComponent.value = false;
-
-  var anilloMove = event.target.value.replaceAll(" ", "_");
-
-  let objectFind = arregloAnillos.find(
-    (anillo: anilloCMDB) => anillo.nombre == anilloMove
-  );
-  console.log("objectFind: ", objectFind);
-
-  arregloAnillos = arregloAnillos.filter(
-    (item: anilloCMDB) => item.nombre !== anilloMove
-  );
-  arregloAnillos.unshift(objectFind);
-
-  console.log("Resort !!!!!! ");
-  console.error("after Resort: ", arregloAnillos);
-
-  let temp2 = dataTransform.parseToRenderGraph(arregloAnillos);
-
-  arregloEnlaces = [];
-  arregloEquipos = [];
-
-  arregloEnlaces = await dataTransform.cleanEnlaces(temp2.arregloEnlaces);
-  arregloEquipos = await dataTransform.cleanEquipos(temp2.arregloEquipos);
 
 
-  renderComponent.value = true;
-  //instance?.proxy?.$forceUpdate();
-
-  console.log("arregloEnlaces: ", arregloEnlaces);
-  console.log("arregloEquipos: ", arregloEquipos);
-  console.table(arregloEquipos);
-
-
-};
-
-watch(renderComponent, async (newQuestion) => {
-  console.error("WATCH !!! ")
-})
 
 </script>
 
@@ -174,12 +127,13 @@ watch(renderComponent, async (newQuestion) => {
       </div>
     </v-card-title>
   </v-card>
-  <!-- -->
 
+  <!-- 
   <span>Marcar anillo: </span>
   <select @change="changeSelect($event)" class="form-control">
     <option :value="item" v-for="item in anillosDisplay">{{ item }}</option>
   </select>
+  -->
 
   <GraficaGroup
     v-if="renderComponent"

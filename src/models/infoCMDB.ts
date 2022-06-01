@@ -19,6 +19,8 @@ export interface anilloCMDB {
     labelDisplay?: string;
     group?: number;
     name?: string;
+    containsLinkRed?: boolean;
+    numCoincidences?: number;
   }
 
   export interface enlace {
@@ -49,3 +51,4 @@ export interface anilloCMDB {
     POP = "./icons/server-control.png",
     Default = "./icons/popicon.png",
   }
+  

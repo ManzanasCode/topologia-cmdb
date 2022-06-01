@@ -1,5 +1,5 @@
 <script lang='ts' setup>
-import { ref, onMounted, watch, toRefs, defineEmits} from "vue";
+import { ref, reactive, onMounted, watch, toRefs, defineEmits } from "vue";
 import * as d3 from "d3";
 import { scaleLinear } from "d3-scale";
 import {
@@ -16,7 +16,15 @@ const props = defineProps<{
   busquedaGrupo: string;
 }>();
 
-
+let simbolos = ref(
+    [
+      { image: "./icons/router_green.png", label:" Router"},
+      { image: "./icons/switch_blue.png", label:" Switch"},
+      { image: "./icons/olt_orange.png", label:" Olt"},
+      { image: "./icons/proveedor.png", label:" Proovedor"},
+      { image: "./icons/server-control.png", label:" POP"},
+    ]
+  )
 
 onMounted(() => {
   //                        ==> MOUNTED
@@ -33,6 +41,10 @@ onMounted(() => {
     console.log("me movieron");
   });
 
+  
+  
+  console.error(simbolos.value)
+
   let color = d3.scaleOrdinal(d3.schemeCategory10);
   let curveTypes = [
     "curveBasisClosed",
@@ -44,7 +56,7 @@ onMounted(() => {
   let polygon: any;
   let centroid: any;
   let scaleFactor = 1.3;
-  
+
   let valueline = d3
     .line()
     .x(function (d) {
@@ -76,16 +88,16 @@ onMounted(() => {
     .zoom()
     .scaleExtent([1 / 3, 4])
     .on("zoom", (event, d) => {
-      node.attr("transform", event.transform);
-      link.attr("transform", event.transform);
       nombreServidor.attr("transform", event.transform);
       ipLabel.attr("transform", event.transform);
       groups.attr("transform", event.transform);
+      link.attr("transform", event.transform);
+      node.attr("transform", event.transform);
+      lablelAnilloOwned.attr("transform", event.transform);
     }) as any; //as any
 
   let svg = d3.select("svg").attr("width", width).attr("height", height);
-
-  let groups = svg.append('g').attr('class', 'groups');
+  let groups = svg.append("g").attr("class", "groups");
 
   let grupoAnillos = props.nodes
     .map((nodo: equipo) => {
@@ -93,7 +105,8 @@ onMounted(() => {
     })
     .filter((grupo, index, self) => {
       return self.indexOf(grupo) == index;
-    }).filter(group => group != 0 )
+    })
+    .filter((group) => group != 0);
 
   /*
   svg
@@ -126,38 +139,25 @@ onMounted(() => {
       return d.color;
     });
 
-  let paths = groups.selectAll('.path_placeholder')
-    .data(grupoAnillos, function(d:any) { return +d; })
+  let paths = groups
+    .selectAll(".path_placeholder")
+    .data(grupoAnillos, function (d: any) {
+      return +d;
+    })
     .enter()
-    .append('g')
-    .attr('class', 'path_placeholder')
-    .append('path')
-    .attr('stroke', function(d:any) { return color(d); })
-    .attr('fill', function(d:any) { return color(d); })
-    .attr('opacity', 0.3)
-    //.call(dragBehavior);
+    .append("g")
+    .attr("class", "path_placeholder")
+    .append("path")
+    .attr("stroke", function (d: any) {
+      return color(d);
+    })
+    .attr("fill", function (d: any) {
+      return color(d);
+    })
+    .attr("opacity", 0.3);
+  //.call(dragBehavior);
 
   //paths.transition().duration(2000).attr("opacity", 0.2);
-
-  let node = svg
-    .append("g")
-    .attr("class", "nodes")
-    .selectAll("image")
-    .data(props.nodes)
-    .enter()
-    .append("image")
-    .attr("width", (d: any) => {
-      return d.tipo == "POP" ? 45 : 55;
-    })
-    .attr("height", (d: any) => {
-      return d.tipo == "POP" ? 45 : 55;
-    })
-    .attr("xlink:href", (d: any) => {
-      return d.imagen;
-    })
-    .call(dragBehavior);
-    
-
   let nombreServidor = d3
     .select(".names")
     .selectAll("text")
@@ -176,9 +176,48 @@ onMounted(() => {
     .enter()
     .append("text")
     .style("font-size", "11px")
+
     .text(function (d) {
       return d.ip;
     });
+
+  let lablelAnilloOwned = svg
+    .append("g")
+    .attr("class", "label-anillo")
+    .selectAll("text")
+    .data(props.nodes)
+    .enter()
+    .append("text")
+    .style("font-size", "11px")
+    .attr("font-weight", 800)
+    .attr("fill", (d) => color(d.group))
+    .attr("fill", (d) => color(d.group))
+    .text(function (d) {
+      if (d.tipo == "Switch" && d.containsLinkRed) return d.nombreAnillo;
+      //else if(d.tipo == "Router" && d.containsLinkRed && d.numCoincidences > 1) return "COMPARTIDO";
+      else if (d.tipo == "Router" && d.containsLinkRed && d.numCoincidences < 2)
+        return d.nombreAnillo;
+      //if(d.tipo == "OLT" ) return d.nombreAnillo;
+      //return "sdsdsdsd"
+    });
+
+  let node = svg
+    .append("g")
+    .attr("class", "nodes")
+    .selectAll("image")
+    .data(props.nodes)
+    .enter()
+    .append("image")
+    .attr("width", (d: any) => {
+      return d.tipo == "EM" ? 42 : 55;
+    })
+    .attr("height", (d: any) => {
+      return d.tipo == "EM" ? 42 : 55;
+    })
+    .attr("xlink:href", (d: any) => {
+      return d.imagen;
+    })
+    .call(dragBehavior);
 
   svg.call(zoomBehavior);
 
@@ -260,14 +299,6 @@ onMounted(() => {
       return d.isDoubleLink ? curveLine : rectline;
     });
 
-    node
-      .attr("x", (d: any) => {
-        return d.tipo == "POP" ? d.x - 18 : d.x - 22;
-      })
-      .attr("y", (d: any) => {
-        return d.tipo == "POP" ? d.y - 23 : d.y - 35;
-      });
-
     nombreServidor
       .attr("x", function (d) {
         return d.x - (d.nombre.length / 2) * 6;
@@ -284,7 +315,28 @@ onMounted(() => {
         return d.y - 40;
       });
 
-    updateGroups();
+    lablelAnilloOwned
+      .attr("x", function (d) {
+        return d.x - 60;
+      })
+      .attr("y", function (d) {
+        return d.y + 30;
+      });
+
+    node
+      .attr("x", (d: any) => {
+        if (d.tipo == "POP") return d.x - 18;
+        else if (d.tipo == "EM") return d.x - 18;
+        else return d.x - 22;
+      })
+      .attr("y", (d: any) => {
+        if (d.tipo == "POP") return d.y - 23;
+        if (d.tipo == "EM") return d.y - 23;
+        else if (d.tipo == "Switch") return d.y - 26;
+        else return d.y - 35;
+      });
+
+    //updateGroups();
   }
 
   function dragstarted(event: any, d: any) {
@@ -304,11 +356,24 @@ onMounted(() => {
     d.fy = null;
   }
 });
-
-
 </script>
 
 <template>
+  <div class="simbologia">
+    <div class="image-conatiner">
+      <v-list>
+        <v-list-item v-for="item in simbolos">
+          <v-img
+            height="60px"
+            width="60px"
+            :src="item.image"
+            dense
+          ></v-img>
+          <v-list-item-title>{{item.label}}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </div>
+  </div>
 
   <svg id="graphDiv">
     <g class="links"></g>
@@ -317,7 +382,15 @@ onMounted(() => {
     <g class="names"></g>
     <g class="ips"></g>
   </svg>
-
 </template>
 
 
+<style scoped>
+.simbologia {
+  position: fixed;
+  right: 5px;
+  top: 0px;
+  width: 12%;
+}
+
+</style>
