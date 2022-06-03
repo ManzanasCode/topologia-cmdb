@@ -16,16 +16,6 @@ const props = defineProps<{
   busquedaGrupo: string;
 }>();
 
-let simbolos = ref(
-    [
-      { image: "./icons/router_green.png", label:" Router"},
-      { image: "./icons/switch_blue.png", label:" Switch"},
-      { image: "./icons/olt_orange.png", label:" Olt"},
-      { image: "./icons/proveedor.png", label:" Proovedor"},
-      { image: "./icons/server-control.png", label:" POP"},
-    ]
-  )
-
 onMounted(() => {
   //                        ==> MOUNTED
   const width =
@@ -40,10 +30,6 @@ onMounted(() => {
   window.addEventListener("resize", function () {
     console.log("me movieron");
   });
-
-  
-  
-  console.error(simbolos.value)
 
   let color = d3.scaleOrdinal(d3.schemeCategory10);
   let curveTypes = [
@@ -83,6 +69,23 @@ onMounted(() => {
       d.fx = null;
       d.fy = null;
     }) as any; //as any
+
+  var tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("position", "fixed")
+    .style("padding", "3px 15px")
+    .style("border-radius", "3px")
+    .style("font-family", "Roboto Condensed")
+    .style("font-size", "15px")
+    .style("font-weight", "bold")
+    .style("text-transform", "uppercase")
+    .style("text-align", "center")
+    .style("background-color", "#646464")
+    //.style("border", "solid 1px #faf2cc")
+    .style("color", "#fff");
 
   const zoomBehavior = d3
     .zoom()
@@ -217,7 +220,23 @@ onMounted(() => {
     .attr("xlink:href", (d: any) => {
       return d.imagen;
     })
-    .call(dragBehavior);
+    .call(dragBehavior)
+    .on("mouseover.tooltip", function (d, n) {
+      console.log("d: ", d)
+      tooltip.transition().duration(300).style("opacity", 0.8);
+      tooltip
+        .html(n.tipo)
+        .style("left", d.pageX + "px")
+        .style("top", d.pageY + 10 + "px");
+    })
+    .on("mouseout.tooltip", function () {
+      tooltip.transition().duration(100).style("opacity", 0);
+    })
+    .on("mousemove", function (d, n) {
+      tooltip
+        .style("left", d.pageX + "px")
+        .style("top", d.pageY + 10 + "px");
+    });
 
   svg.call(zoomBehavior);
 
@@ -359,22 +378,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="simbologia">
-    <div class="image-conatiner">
-      <v-list>
-        <v-list-item v-for="item in simbolos">
-          <v-img
-            height="60px"
-            width="60px"
-            :src="item.image"
-            dense
-          ></v-img>
-          <v-list-item-title>{{item.label}}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </div>
-  </div>
-
   <svg id="graphDiv">
     <g class="links"></g>
     <g class="dobleLink"></g>
@@ -392,5 +395,4 @@ onMounted(() => {
   top: 0px;
   width: 12%;
 }
-
 </style>
